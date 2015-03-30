@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="doc.qhw.me/ibm/install-iis/">
+        <link rel="shortcut icon" href="../../favicon.ico">
+        
+
+        <title>InfoSphere IS - Ø Post-it Notes</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/prettify-1.0.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Ø Post-it Notes</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../linux">Linux</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">IBM <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li class="active">
+                            <a href=".">InfoSphere IS</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../help/mkdocs-help">MkDocs</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../about">About</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="../../linux">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../help/mkdocs-help">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#install-infosphere-information-server-87-on-linux">Install InfoSphere Information Server 8.7 on Linux</a></li>
+        
+            <li><a href="#creating-a-response-file">Creating a response file</a></li>
+        
+            <li><a href="#check-installation-environment">Check installation environment</a></li>
+        
+            <li><a href="#starting-the-installation-with-a-response-file">Starting the installation with a response file</a></li>
+        
+            <li><a href="#installing-iis-by-using-the-wizard-graphical-mode">Installing IIS by using the wizard (graphical mode)</a></li>
+        
+    
+        <li class="main "><a href="#install-infosphere-information-server-on-windows-2008-server">Install InfoSphere Information Server on Windows 2008 Server</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h2 id="install-infosphere-information-server-87-on-linux">Install InfoSphere Information Server 8.7 on Linux</h2>
+<hr />
+<p>IBM InfoSphere Information Server(IIS) is one of IBM data intergration platform. It includes a couple of componets:</p>
+<ul>
+<li>DataSage - ETL tools</li>
+<li>QualityStage - data quality</li>
+<li>Business Glossary - business term definition and managment</li>
+<li>Matedata, Information Analyzer, etc</li>
+</ul>
+<h4 id="creating-a-response-file">Creating a response file</h4>
+<p>To access all services in IIS are based on the hostname or IP address. Here is used to hostname which is defined in the file <code>hosts</code>. Making sure hostname properly, you can access host via hostname.</p>
+<pre><code>   # cat /etc/hosts 
+   192.168.156.101      iis87 iis87.lab 
+</code></pre>
+
+<p>If you use graphic mode IIS installation, you will skip creating response file because the installation mode is interactive to building a response file.
+If you do CLI mode installation, you may follow the blow:</p>
+<ol>
+<li>
+<p>Copy  a sample file from directory  <code>Media_location/is-suite/samples/responses</code>, 
+and then chose one of them that corresponding OS and database for repository. Here is <code>UnixDB2.txt</code>, due to installing DB2 as the IIS's repository Database.</p>
+</li>
+<li>
+<p>Modify the response file with corresponded parameters. Following is a response file sample</p>
+</li>
+</ol>
+<pre><code>   suite.installLocation=/opt/IBM/InformationServer
+   LIC_AGREEMENT=ACCEPT  # Accept license
+
+   # IIS depolyment architecture, here has DB, APP Server, and Engine in the server 
+   suite.tier[database.tier].selected=true
+   suite.tier[app.server.tier].selected=true
+   suite.tier[engine.tier].selected=true
+
+   # if option is true, that product will be installed
+   product[BusinessGlossary].selected=true
+   product[BusinessGlossaryAnywhere].selected=true
+   product[datastage].selected=true
+   product[FastTrack].selected=true
+   product[IMAM].selected=true
+   product[InformationAnalyzer].selected=true
+   product[ISALite].selected=true
+   product[ISTools].selected=true
+   product[metadata.server].selected=true
+   product[MetadataWorkbench].selected=true
+   product[qualitystage].selected=true
+   product[Recovery].selected=true
+   product[WISD].selected=true
+
+   # depended componets that will be installed if its value is ture
+   DataStage=true
+   DataStage.BalOp=false
+
+   DataStage.MVS=false
+   DataStage.SAS=false
+
+   DataStage.Server=false
+   allow.customize.was.profile.ports=true
+
+   app.server.password=&lt;password&gt;
+   app.server.type=was  # Websphere as the application server
+   app.server.user=wasadmin
+   db2.admin.group.name=dasadm1
+
+   # related to repostory's database, here is DB2. it can be other DBMS.
+   db2.admin.home.directory=/home/dasusr1  # sys user id 
+   db2.admin.user.name=dasusr1             # DB2 admin id
+   db2.admin.user.password=&lt;password&gt;
+
+   db2.fenced.group.name=db2fadm1
+   db2.fenced.home.directory=/home/db2fenc1
+   db2.fenced.user.name=db2fenc1
+   db2.fenced.user.password=&lt;password&gt;
+
+   db2.install.location=/opt/IBM/db2
+   db2.instance.group=db2iadm1
+
+   db2.instance.home.directory=/home/db2inst1
+   db2.instance.name=db2inst1      # DB2 instance name
+   db2.instance.user.name=db2inst1
+   db2.instance.user.password=&lt;password&gt;
+
+   db2.port.number=50000   # DB2 access port number
+
+   ds.admin.uid=dsadm
+</code></pre>
+
+<p>For the <em>password</em>, you may be 2 optional types encrypted or plain. The encrypted <em>password</em> is be generated by <code>install_media/tools/genkey.sh</code>.</p>
+<p>For example, if password is 'abc'
+<code>./genkey.sh -generate abc      # Generate encrypted characters
+ {xor}WvszPqcFq58=             # encrypted charaters</code></p>
+<p>And then, the encrypted characters is put in the response file <em>password</em>.
+<code>app.server.password={xor}WvszPqcFq58=    // in response file</code></p>
+<p>If using plain characters <em>password</em>, the password characters is get in response file directly. 
+<code>App.server.password=abc</code></p>
+<h4 id="check-installation-environment">Check installation environment</h4>
+<p>Go to in the directory <code>is_suite</code>, and execute following:
+<code>./setup  -reportOnly  -rsp response_file_name  -verbose</code>
+Run the setup command with the <code>-reportOnly</code> parameter to perform the prerequisite check. <br />
+The installation program runs through a prerequisites check phase. If all prerequisite checks pass, 
+installation continues until the installation process finishes. If one or more prerequisite checks fail, 
+the installation displays errors and stops. The prerequisites check report contains messages like the following line:
+<code>FAIL - The DB2 installation directory C:\IBM\SQLLIB must be empty</code>.
+If a prerequisites check fails, correct the problem and restart the installation.
+Be careful, there could be a hide directory in the directory <code>/opt/.ibm</code> if you had unsuccessful IIS installation or uninstallation before. Looks like this <code>/opt/.ibm/.nif/.nifregistry</code> in Linux. You can simply delete the file.</p>
+<p>The log files are in <code>/tmp/ibm_is_logs/</code>, find the failed item by Error ID or Warning ID. For example, there is a warning message:
+WARNING: CDIPR2021I: Ensure that required kernel parameter kernel.shmall is optimal. You can find the warning detail in log file. 
+<code>cat /temp/ibm_is_logs ISInstall2013.07.27.13.21.36.log | grep CDIPR2021I</code></p>
+<p>If need changing Linux Kernel parameters, it's following:
+To modify these kernel parameters, we need to edit the <code>/etc/sysctl.conf file</code>. If this file does not exist, it should be created. The following lines are examples of what should be placed into the file:</p>
+<pre><code>   kernel.sem=250 256000 32 1024
+   #Example shmmax for a 64-bit system
+   kernel.shmmax=1073741824 
+   #Example shmall for 90 percent of 16 GB memory
+   kernel.shmall=3774873        
+   kernel.msgmax=65535kernel.msgmnb=65535
+</code></pre>
+
+<p>Run <code>sysctl -p</code> to load in <strong>sysctl</strong> settings from the default file <code>/etc/sysctl.conf</code>.</p>
+<pre><code>`# sysctl -p`
+</code></pre>
+<p>To make the changes effective after every reboot, <code>boot.sysctl</code> needs to be active on SUSE Linux. On Red Hat, the <code>rc.sysinit</code> initialization script will read the <code>/etc/sysctl.conf</code> file automatically.</p>
+<h4 id="starting-the-installation-with-a-response-file">Starting the installation with a response file</h4>
+<p>You can run a silent installation of IIS by using a response file rather than by using the installation wizard. Follow the progress of the installation by monitoring the installation log file.</p>
+<p>Procedure</p>
+<ol>
+<li>
+<p><strong>Optional:</strong> Modify the <code>EXCEPTION_POLICY</code> environment variable. This variable determines how errors are processed that might occur when running in silent mode. <br />
+Linux <code>Csh, tcsh</code> - <code>setenv EXCEPTION_POLICY=n</code>, <code>bash</code> - <code>Export EXCEPTION_POLICY=n</code>. <em>n</em> can be any of the following values: <br />
+      1 - Prompt user to try again on error (default behavior) <br />
+      2 - Continue on error <br />
+<strong>Important:</strong> Continuing with an installation after an error occurs could result in a nonoperational installation, or might cause existing installed software to stop functioning. Use this option only if directed by IBM® Support. <br />
+      3 - Exit on error</p>
+</li>
+<li>
+<p>Log in to Linux as the <code>root</code> user   </p>
+</li>
+<li>
+<p>In a shell window, or terminal, on the Linux and keep the window or terminal open during the entire installation process. If you use <code>ssh</code>, make sure that the session doesn't shut down or timeout the duration of tht installation.   </p>
+</li>
+<li>
+<p>run <code>bash.sh</code> <code>export IBM_JAVA_OPTIONS=</code> or <code>unsetenv IBM_JAVA_OPTIONS</code> in <code>csh, tcsh</code>. To clear any Java options that maight be set.   </p>
+</li>
+<li>
+<p>On Linux: If the target installation directory for IIS, WebSphere Application Server(WAS), or DB2 is an NFS file system, run the following command to ensure that the lock daemon is running. <code>ps -ef | grep -i lockd</code> If the lock daemon is not running, need to start the daemon services.   </p>
+</li>
+<li>
+<p>Run <code>./setup -rsp response_file_name -verbose</code> to start the installation program. The <code>response_file_name</code> may include the path and filename of the response file.</p>
+</li>
+</ol>
+<h4 id="installing-iis-by-using-the-wizard-graphical-mode">Installing IIS by using the wizard (graphical mode)</h4>
+<p>When you first start the installation program, it presents a non-graphical interface. The program starts a self-contained web server on the computer. You can then start a web browser on the computer or on a remote computer and access the graphical interface. <br />
+After you enter your settings in the wizard pages, the program stores your settings in a response file. If you run the installation program again, you can load your settings from this file into the program instead of entering them again.   </p>
+<p>Procedure   </p>
+<ol>
+<li>Change to the <code>is-suite</code> directory within the directory that contains the installation media.   </li>
+<li>Run the installation program <code>./setup [-verbose]</code> <br />
+    The -verbose option is optional. The option causes the installation program to display log messages to the console and also write them to the log file. If the -verbose option is not specified, log messages are written to the log file only. <br />
+    Several messages are displayed. The program then displays a message about how to access the installation wizard: <br />
+<code>======&gt; Enter one of the following URLs to your web browser to begin the</code> <br />
+<code>installation process:</code> <br />
+<code>http://localhost:8080/ISInstall</code> or <code>https://localhost:8443/ISInstall</code>   </li>
+<li>Open a web browser on the computer or on a remote computer, 
+and navigate to one of the addresses that is listed in the messages from starting the installation program.</li>
+</ol>
+<p>Refer to <a href="http://www-01.ibm.com/support/knowledgecenter/SSZJPZ_8.7.0/com.ibm.swg.im.iis.install.nav.doc/containers/cont_iis_information_server_installation.html">IBM IIS Installation</a></p>
+<p>================================================================================</p>
+<h2 id="install-infosphere-information-server-on-windows-2008-server">Install InfoSphere Information Server on Windows 2008 Server</h2>
+<hr />
+</div>
+        </div>
+
+        
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/prettify-1.0.min.js"></script>
+        <script src="../../js/base.js"></script>
+    </body>
+</html>
