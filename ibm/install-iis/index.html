@@ -10,7 +10,7 @@
         <link rel="shortcut icon" href="../../favicon.ico">
         
 
-        <title>InfoSphere IS - Ø Post-it Notes</title>
+        <title>IIS Installation - Ø Post-it Notes</title>
 
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -60,7 +60,11 @@
                     <ul class="dropdown-menu">
                     
                         <li class="active">
-                            <a href=".">InfoSphere IS</a>
+                            <a href=".">IIS Installation</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../monitor-iis-inst">Monitoring IIS Installation</a>
                         </li>
                     
                     </ul>
@@ -97,7 +101,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../../help/mkdocs-help">
+                    <a rel="prev" href="../monitor-iis-inst">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -119,10 +123,18 @@
         
             <li><a href="#starting-the-installation-with-a-response-file">Starting the installation with a response file</a></li>
         
-            <li><a href="#installing-iis-by-using-the-wizard-graphical-mode">Installing IIS by using the wizard (graphical mode)</a></li>
+            <li><a href="#graphical-mode-installing-iis">Graphical mode Installing IIS</a></li>
+        
+            <li><a href="#installation-program-encounters-an-error">Installation program encounters an error</a></li>
         
     
         <li class="main "><a href="#install-infosphere-information-server-on-windows-2008-server">Install InfoSphere Information Server on Windows 2008 Server</a></li>
+        
+            <li><a href="#prepare-windows-environment">Prepare Windows environment</a></li>
+        
+            <li><a href="#install-iis">Install IIS</a></li>
+        
+            <li><a href="#configuring-permissions-and-groups-windows-server-2008">Configuring permissions and groups (Windows Server 2008)</a></li>
         
     
     </ul>
@@ -136,7 +148,7 @@
 <li>DataSage - ETL tools</li>
 <li>QualityStage - data quality</li>
 <li>Business Glossary - business term definition and managment</li>
-<li>Matedata, Information Analyzer, etc</li>
+<li>Matedata, Information Analyzer, etc.</li>
 </ul>
 <h4 id="creating-a-response-file">Creating a response file</h4>
 <p>To access all services in IIS are based on the hostname or IP address. Here is used to hostname which is defined in the file <code>hosts</code>. Making sure hostname properly, you can access host via hostname.</p>
@@ -223,7 +235,7 @@ and then chose one of them that corresponding OS and database for repository. He
 <p>And then, the encrypted characters is put in the response file <em>password</em>.
 <code>app.server.password={xor}WvszPqcFq58=    // in response file</code></p>
 <p>If using plain characters <em>password</em>, the password characters is get in response file directly. 
-<code>App.server.password=abc</code></p>
+<code>App.server.password=abc</code>   </p>
 <h4 id="check-installation-environment">Check installation environment</h4>
 <p>Go to in the directory <code>is_suite</code>, and execute following:
 <code>./setup  -reportOnly  -rsp response_file_name  -verbose</code>
@@ -279,10 +291,11 @@ Linux <code>Csh, tcsh</code> - <code>setenv EXCEPTION_POLICY=n</code>, <code>bas
 <p>Run <code>./setup -rsp response_file_name -verbose</code> to start the installation program. The <code>response_file_name</code> may include the path and filename of the response file.</p>
 </li>
 </ol>
-<h4 id="installing-iis-by-using-the-wizard-graphical-mode">Installing IIS by using the wizard (graphical mode)</h4>
-<p>When you first start the installation program, it presents a non-graphical interface. The program starts a self-contained web server on the computer. You can then start a web browser on the computer or on a remote computer and access the graphical interface. <br />
+<h4 id="graphical-mode-installing-iis">Graphical mode Installing IIS</h4>
+<p>You can also install IIS by using the wizard.
+ When you first start the installation program, it presents a non-graphical interface. The program starts a self-contained web server on the computer. You can then start a web browser on the computer or on a remote computer and access the graphical interface. <br />
 After you enter your settings in the wizard pages, the program stores your settings in a response file. If you run the installation program again, you can load your settings from this file into the program instead of entering them again.   </p>
-<p>Procedure   </p>
+<p>Procedure</p>
 <ol>
 <li>Change to the <code>is-suite</code> directory within the directory that contains the installation media.   </li>
 <li>Run the installation program <code>./setup [-verbose]</code> <br />
@@ -291,13 +304,123 @@ After you enter your settings in the wizard pages, the program stores your setti
 <code>======&gt; Enter one of the following URLs to your web browser to begin the</code> <br />
 <code>installation process:</code> <br />
 <code>http://localhost:8080/ISInstall</code> or <code>https://localhost:8443/ISInstall</code>   </li>
-<li>Open a web browser on the computer or on a remote computer, 
-and navigate to one of the addresses that is listed in the messages from starting the installation program.</li>
+<li>Open a web browser on the computer or on a remote computer,
+ and navigate to one of the addresses that is listed in the messages from starting the installation program.</li>
+</ol>
+<h4 id="installation-program-encounters-an-error">Installation program encounters an error</h4>
+<p>After you start the installation process, the installation program might encounter an error that requires your action to resolve. <br />
+<strong>Symptoms</strong> The installation program encounters an error and an Installation Exception window appears. <br />
+Resolving the problem, complete these steps in the Installation Exception window:</p>
+<ol>
+<li>Click Retry failed action and then click OK.   </li>
+<li>If the problem recurs, review the last statements in the log file to determine what caused the error. See <a href="http://pic.dhe.ibm.com/infocenter/iisinfsv/v8r7/topic/com.ibm.swg.im.iis.productization.iisinfsv.install.doc/topics/ts_cont_logfiles.html">Log files</a> for more information. <br />
+    a. Investigate and fix the error. <br />
+    b. Click Retry failed action and then click OK.   </li>
+<li>If the issue can be resolved, fix the issue, and then click Retry.   </li>
 </ol>
 <p>Refer to <a href="http://www-01.ibm.com/support/knowledgecenter/SSZJPZ_8.7.0/com.ibm.swg.im.iis.install.nav.doc/containers/cont_iis_information_server_installation.html">IBM IIS Installation</a></p>
-<p>================================================================================</p>
+<hr />
 <h2 id="install-infosphere-information-server-on-windows-2008-server">Install InfoSphere Information Server on Windows 2008 Server</h2>
 <hr />
+<p>Installing IIS on Windows is easy than on Linux because Windows does not like Linux that need many dependency packages working for IIS and the installation process is in graphical mode on Windows. 
+However, on Windows you still need to install a few software for IIS.</p>
+<h4 id="prepare-windows-environment">Prepare Windows environment</h4>
+<ul>
+<li>Check hostname</li>
+<li>Make sure the log in user which has user Administrator privilege or it is in the group Administrators</li>
+</ul>
+<p>Before installing IIS, you may install followings</p>
+<ol>
+<li>last Service Package(SP)  </li>
+<li>language Compiler Microsoft Visual C++ (or Studio .Net) 2008 Express Edition, or 2010 Express Edition,</li>
+<li>Microsoft DotNet 4.0 or later,</li>
+<li>MSXML4.0</li>
+</ol>
+<p>Run <code>setup</code> for requirement check <br />
+<img alt="requirement check" src="../../ibm/img/inst-iis-win-1.gif" /></p>
+<h4 id="install-iis">Install IIS</h4>
+<ol>
+<li>Run cmd.exe as administrator  (cmd.exe user:adminiastrator)</li>
+<li>Run .\is_suite\setup.exe</li>
+<li>Follow instruction on interactive installation </li>
+<li>Select installation products and tires on the server </li>
+</ol>
+<p>IIS installation process <br />
+<img alt="IIS installation process" src="../../ibm/img/inst-iis-win-2.jpg" /></p>
+<h4 id="configuring-permissions-and-groups-windows-server-2008">Configuring permissions and groups (Windows Server 2008)</h4>
+<p>Configuring permissions and groups (Windows Server 2008)</p>
+<p>You must complete these tasks to configure users and groups to access to Information Server. 
+This configuration is required only for the engine tier computer. 
+This configuration is only applicable to the users of the operating system where the engine tier components are installed.</p>
+<p>Procedure</p>
+<ol>
+<li>Log in to Microsoft Windows Server 2008 as an administrator.</li>
+<li>
+<p>Create a <code>group</code>.</p>
+<ul>
+<li>Click <code>Start &gt; Control Panel &gt; Administrative Tools &gt; Computer Management</code>.   </li>
+<li>In the <code>Computer Management window</code>, expand <code>System Tools &gt; Local Users and Groups &gt; Groups</code>.   </li>
+<li>Click <code>Action &gt; New Group</code>.   </li>
+<li>In the <code>New Group</code> window, type <code>DataStage</code> as the name for the group, click <code>Create</code>, and click <code>Close</code>.   </li>
+</ul>
+</li>
+<li>
+<p>Configure users and the DataStage group to log in.</p>
+<ul>
+<li>Click <code>Start &gt; Control Panel &gt; Administrative Tools &gt; Local Security Policy</code>.</li>
+<li>In the <code>Local Security Settings</code> window, expand <code>Local Policies &gt; User Rights Assignment</code> to display the policies.</li>
+<li>In the <code>Local Security</code> window, click the <code>Allow log on Locally</code> policy and click <code>Actions &gt; Properties</code>.</li>
+<li>In the <code>Allow log on Locally Properties</code> window, click <code>Add User or Group</code>.</li>
+<li>In the <code>Select Users or Groups</code> window, click <code>Locations</code>, click the <em>name</em> of your local computer, and click <code>OK</code>.</li>
+<li>In the <code>Select Users or Groups</code> window, click <code>Advanced</code> and click <code>Find Now</code>.</li>
+<li>In the search results, select <code>Authenticated Users and DataStage</code> and click <code>OK</code> three times to save the results and to return to the <code>Local Security</code> window.</li>
+<li>In the <code>Local Security</code> window, click the <code>Log on as a Batch Job</code> policy and click <code>Actions &gt; Properties</code>.</li>
+<li>In the Log on as a <code>Batch Job</code> window, click <code>Add User or Group</code>.</li>
+<li>In the Select <code>Users or Groups</code> window, click <code>Locations</code>, click the <em>name</em> of your local computer, and click <code>OK</code>.</li>
+<li>In the Select <code>Users or Groups</code> window, click <code>Advanced</code>, and then click <code>Find Now</code>.</li>
+<li>In the search results, select <code>DataStage</code> and click <code>OK</code> three times to save the results and to return to the <code>Local Security</code> window.</li>
+<li>Close the <code>Local Security Policy</code> window.</li>
+</ul>
+</li>
+<li>
+<p>Add users to the group.</p>
+<ul>
+<li>From the Computer Management window, click <code>Groups</code>.</li>
+<li>Click the <em>name</em> of the group that you want to add users to (DataStage).</li>
+<li>Click <code>Action &gt; Add to Group</code>.</li>
+<li>In the <code>User Properties</code> window, click <code>Add</code>.</li>
+<li>In the <code>Select Users or Groups</code> window, click <code>Location</code>.</li>
+<li>Click the <em>name</em> of your local computer, and then click <code>OK</code>.</li>
+<li>In the Select <code>Users window</code>, click <code>Advanced</code>.</li>
+<li>In the window that opens, click <code>Find Now</code>.</li>
+<li>Click the <em>names</em> of users that you want to include in the group, and click <code>OK</code>. At a minimum, include all authenticated users.</li>
+<li>Click <code>OK</code> three times to return to the <code>Computer Management</code> window.</li>
+<li>Close the <code>Computer Management</code> window.</li>
+</ul>
+</li>
+<li>
+<p>Set permissions for the following folders:  <br />
+<code>C:\IBM\InformationServer\Server</code> <br />
+<code>C:\Program Files\MKS Toolkit\fifos</code> <br />
+<code>C:\Windows\%TEMP%</code> <br />
+<code>C:\tmp</code> <br />
+    Complete the following steps for each of the listed folders.</p>
+<ul>
+<li>Select the folder and click <code>File &gt; Properties</code>.</li>
+<li>In the <code>Properties</code> window, click the <code>Security</code> tab, and click <code>Edit</code>.</li>
+<li>In the <code>Permissions</code> window, click <code>Add</code>.</li>
+<li>In the <code>Select Users or Groups</code> window, click <code>Locations</code>.</li>
+<li>Click the <em>name</em> of the local computer, and click <code>OK</code>.</li>
+<li>In the <code>Select Users or Groups window</code>, click <code>Advanced</code>.</li>
+<li>In the window that opens, click <code>Find Now</code>.</li>
+<li>Click the <em>name</em> of the group that you want to set permissions for (DataStage).</li>
+<li>Click <code>OK</code> twice.</li>
+<li>In the <code>Permissions list</code>, select to allow <code>Modify</code>, <code>Read &amp; execute</code>, <code>List folder contents</code>, <code>Read</code>, and <code>Write Permissions</code>. Click <code>OK</code>.</li>
+<li>If you receive a message that asks you to confirm the changes, click <code>Apply</code> changes to this folder, subfolders and files.</li>
+</ul>
+</li>
+</ol>
+<p>Refer to <a href="http://www-01.ibm.com/support/knowledgecenter/SSZJPZ_8.7.0/com.ibm.swg.im.iis.install.nav.doc/containers/cont_iis_information_server_installation.html">IBM IIS Installation</a></p>
 </div>
         </div>
 
