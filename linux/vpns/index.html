@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="doc.qhw.me/linux/vpns/">
+        <link rel="shortcut icon" href="../../favicon.ico">
+        
+
+        <title>VPNs - Ø Post-it Notes</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/prettify-1.0.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Ø Post-it Notes</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">IBM <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../ibm/install-iis">IIS Installation</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../../ibm/monitor-iis-inst">Monitoring IIS Installation</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Linux <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li class="active">
+                            <a href=".">VPNs</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">MarkDown <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../../mrkup/mkdocs-help">MkDocs</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../about">About</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="../../ibm/monitor-iis-inst">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../mrkup/mkdocs-help">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#haproxy-in-multiple-shadowsocks-servers-environment">Haproxy in multiple ShadowSocks servers environment</a></li>
+        
+            <li><a href="#install-and-configure-shadowssocks">Install and configure ShadowsSocks</a></li>
+        
+            <li><a href="#install-and-configure-haproxy">Install and configure Haproxy</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h2 id="haproxy-in-multiple-shadowsocks-servers-environment">Haproxy in multiple ShadowSocks servers environment</h2>
+<hr />
+<p><a href="http://www.haproxy.org/">Haproxy</a> is a high performance TCP/HTTP load balancing and proxy, and it works with TCP and HTTP-based application. <br />
+<a href="https://github.com/shadowsocks">ShadowSocks(SS)</a> is a lightweight Socks5 tunnel proxy working on multiple platforms such as Windows, and Linux base. The ShadowSocks is based on client/server architecture, and it is implemented by multiple programming languages including C, Python, Go, etc.   </p>
+<p>In this scenario, there are several ShadowSocks working as proxies server, and distributed different geographical locations keeping proxies accessibly. However, handling with multiple SS servers depended where you access, you need to frequently switch to different SS server. In addition, that is also a problem for you how to choose a right SS server in a right time. <br />
+The solution is to put a Haproxy in the front of SS servers to aggregate all SS servers, and to help users making the choice. The Haproxy functions mostly as a loading balance service, and relays incoming traffic to a properly outgoing interface based on a certain balance algorithm. <br />
+Haproxy has two work mode TCP (layer 4) and HTTP (layer 7), and it doesn't support UDP (layer 4). Therefore, these SS may not work with UDP relay if using SS relay. However, you could find an alternate way that runs SS client in Haproxy local server to handle with UDP. Haproxy, here, looks like a socks proxy with load balancing.</p>
+<p>Briefly architectural   </p>
+<pre><code>             - Relay SS connection
+             +-----------+   +---------+    +---------+    +---------+ 
+             | SS Server |   |SS server|    |SS Server|    |SS Server| 
+             +-----------+   +---------+    +---------+    +---------+ 
+                   ||           ||             ||             ||       
+                   ||           ||   back end  ||             ||       
+                  1||          2||            3||            4||       
+                 +-----------------------------------------------+    
+                 |                    Haproxy                    |    
+                 +-----------------------------------------------+    
+                                         | |                           
+                                         | |                           
+                             front end   | |                           
+                                         | |                           
+                                         | |                            
+                                      SS clients
+
+            - Socks proxy
+             +-----------+   +---------+    +---------+    +---------+ 
+             | SS Server |   |SS server|    |SS Server|    |SS Server| 
+             +-----------+   +---------+    +---------+    +---------+ 
+                   ||           ||             ||             ||       
+                   ||           ||   back end  ||             ||       
+                  1||          2||            3||            4||       
+                 +-----------------------------------------------+    
+                 |             Haproxy and SS clients            |    
+                 +-----------------------------------------------+    
+                                         | |                           
+                                         | |                           
+                             front end   | |                           
+                                         | |                           
+                                         | |                            
+                                        users
+</code></pre>
+<p>As before mentioned, there are two more ways to use SS with the Haproxy. </p>
+<ul>
+<li>Relay SS traffic between SS server and client <br />
+   The SS clients run on individual desktop or laptop side, but server. The Haproxy receives a SS client's traffic from client side, and then relays these traffic to a SS server or vice versa. When incoming traffic arrive Haproxy, the traffic are sent a outgoing port by Haproxy, to according to a balancing algorithm.   </li>
+<li>Socks proxy server<br />
+   A single SS service functions a socks proxy tunnel, so SS clients and Haproxy can be placed in same server. Haproxy accesses indirectly remote SS servers. In the situation, Haproxy connects local SS clients that are likely local services. </li>
+</ul>
+<p>If Haproxy works on relay SS connection, all SS services running in remote servers have to have same password and cipher method in its SS configuration. the configuration depends SS clients' configuration or vice versa. It is because Haproxy doesn't directly connect to the SS server, but only relaying traffic.  </p>
+<h4 id="install-and-configure-shadowssocks">Install and configure ShadowsSocks</h4>
+<p>In Debian 7 Wheezy environment:   </p>
+<ul>
+<li>
+<p>Install ShadowsSocks<br />
+   I prefer ShadowsSocks_libev, that is compiled by C compiler, in Debian due to installing easily and consuming less server's resource, following the <a href="https://github.com/shadowsocks/shadowsocks-libev#debian--ubuntu">instruction</a> to install ShadowSocks  </p>
+<ol>
+<li>Install SS in remote servers, for example VPSs, and run the SS service</li>
+<li>Install SS in the server located Haproxy, and run the SS client there. These clients are used for socks proxy.</li>
+</ol>
+</li>
+<li>
+<p>Configure SS services and SS clients. Make sure these clients in Haproxy server can properly connect corresponded SS services in remote server. For example, a SS service and its client-side configuration.  </p>
+</li>
+</ul>
+<pre><code># a SS service configuration
+{
+    &quot;server&quot;:&quot;0.0.0.0&quot;,
+    &quot;server_port&quot;:8800,   # TCP port number for SS service
+    &quot;password&quot;:&quot;password&quot;,
+    &quot;local_address&quot;: &quot;127.0.0.1&quot;,
+    &quot;local_port&quot;:1080,    # local port, doesn't matter if a SS Service
+    &quot;timeout&quot;:120,
+    &quot;method&quot;:&quot;rc4-md5&quot;,
+    &quot;fast_open&quot;: false,
+    &quot;workers&quot;: 1
+}
+
+# opposite client configuration
+{
+    &quot;server&quot;: &quot;IP or domain name&quot;,  # Server's IP address or domain name
+    &quot;server_port&quot;:8800,             # SS service port number in the connected server
+    &quot;local_address&quot;: &quot;127.0.0.1&quot;,
+    &quot;local_port&quot;:23001,             # local port number for proxy client connection  
+    &quot;password&quot;:&quot;password&quot;,
+    &quot;timeout&quot;:180,
+    &quot;method&quot;:&quot;rc4-md5&quot;,             # cipher method
+    &quot;fast_open&quot;: false,
+    &quot;workers&quot;: 1
+}
+</code></pre>
+
+<ul>
+<li>
+<p>Run SS service and SS client</p>
+<ul>
+<li>on service end:
+    <code>ss-server -c /etc/shadowsocks/config.json -f /var/run/shadowsocks-server/pid</code> <br />
+     The file config.json is the SS service configuration path and filename, pid is process id file if running. You can run multiple SS services that are defined by multiple configuration files in a server.  </li>
+<li>On the client end:<br />
+<code>ss-local -c /etc/shadowsocks/ss1.json</code><br />
+     The file ss1.json is the SS client configuration file against the SS service in a remote server. <br />
+     Using <code>netstat -anp | grep ss-server</code> on the server, or <code>netstat -anp | grep ss-local</code> on SS client-side, check the connection between SS service and client. If no connection, check them both configuration files.</li>
+</ul>
+</li>
+</ul>
+<h4 id="install-and-configure-haproxy">Install and configure Haproxy</h4>
+<ul>
+<li>Install Haproxy<br />
+<code>sudo apt-get update</code><br />
+<code>sudo apt-get install haproxy</code>  </li>
+<li>Configure Haproxy
+   Following is a Haproxy configuration, example for:</li>
+</ul>
+<pre><code>root@debian:/etc/haproxy# cat haproxy.cfg
+
+global
+        log /dev/log    local0
+        log /dev/log    local1 notice
+        chroot /var/lib/haproxy
+        stats socket /run/haproxy/admin.sock mode 660 level admin
+        stats timeout 30s
+#       maxconn 10000
+        user haproxy
+        group haproxy
+        daemon
+
+        # Default SSL material locations
+        ca-base /etc/ssl/certs
+        crt-base /etc/ssl/private
+
+        # Default ciphers to use on SSL-enabled listening sockets.
+        # For more information, see ciphers(1SSL).
+        ssl-default-bind-ciphers kEECDH+aRSA+AES:kRSA+AES:+AES256:RC4-SHA:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL
+        ssl-default-bind-options no-sslv3
+
+defaults
+        log     global
+        mode    tcp
+        option  tcplog
+        option  dontlognull
+        timeout connect 3000
+        timeout client  120000
+        timeout server  120000
+        timeout client-fin 360000
+        timeout tunnel 360000
+        errorfile 400 /etc/haproxy/errors/400.http
+        errorfile 403 /etc/haproxy/errors/403.http
+        errorfile 408 /etc/haproxy/errors/408.http
+        errorfile 500 /etc/haproxy/errors/500.http
+        errorfile 502 /etc/haproxy/errors/502.http  
+        errorfile 503 /etc/haproxy/errors/503.http
+        errorfile 504 /etc/haproxy/errors/504.http    
+
+listen stats :8080        
+        mode http
+        stats enable
+        stats hide-version
+        stats realm Haproxy\ Statistics     # show haproxy statistics web page 
+        stats uri /stat                     # web url is ip:8080/stat 
+        stats refresh 20s
+        stats auth admin:password           # userid and password for statistics web page
+        stats admin if TRUE
+
+listen ss-proxy
+        bind 192.168.199.120:23200            # front end ip and port number as Socks5 proxy ip and port 
+        balance leastconn
+        option httpchk HEAD /healthcheck HTTP/1.0\r\n      # for remote server health check by http protocol 
+
+        #http-check disable-on-404      # if getting http 404, ignore this error, and think remote server is OK  
+
+        server ss1 127.0.0.1:23001 
+        server ss2 127.0.0.1:23002 
+        server ss3 127.0.0.1:23003 
+#        server ss4 127.0.0.1:23004  
+#        server ss5 127.0.0.1:23005 check
+
+frontend ss-directly
+        bind 192.168.299.120:23100       # front end's IP and port that relay SS client's TCP connection to SS server
+        timeout client  120000
+
+        tcp-request inspect-delay 6000      # multiple use IP and port for SS server and HTTP         
+        tcp-request content accept if HTTP  # accept HTTP  
+
+        use_backend ss-servers if ! HTTP    # select back end based on Http or none Http 
+        use_backend http-servers if HTTP
+
+backend ss-servers
+        balance leastconn       # load balance algorithm 
+        timeout connect 9000
+        server ss1 ss1.example.com:8800 check inter 30000      # SS server domain name and port 
+        server ss2 ss2.example.com:28799 check inter 30000
+        server ss3 ss3.example.com:8801 check inter 30000
+
+backend http-servers
+        mode http
+        timeout connect 6000
+        option transparent
+        option httplog
+
+        acl used_url url_beg /web || url_beg /mail || url_beg /stat  # for http, url should locate one of them
+        http-request tarpit unless used_url                          # if not, discard
+
+        use-server web if { url_beg -i /web }
+        server web 192.168.193.231:32500 check inter 60000
+
+        use-server mail if { url_beg -i /mail }
+        server mail 192.168.193.231:9091 check inter 60000
+
+        use-server stat if { url_beg -i /stat }
+        server stat 192.168.193.201:8080 check inter 60000
+</code></pre>
+
+<ul>
+<li>run Haproxy <br />
+<code>service haproxy start</code></li>
+</ul>
+</div>
+        </div>
+
+        
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/prettify-1.0.min.js"></script>
+        <script src="../../js/base.js"></script>
+    </body>
+</html>
